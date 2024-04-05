@@ -1,0 +1,26 @@
+{
+  "name": "personaltrackingrepo",
+  "version": "1.0.0",
+  "description": "The Personal Finance Tracker is a console-based/web UI application designed to help users track their expenses and income, categorize transactions, and view financial summaries. This project focuses on applying clean code principles to develop a maintainable, efficient, and high-quality software solution using JavaScript.",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MatviievMark/personalTrackingRepo.git"
+  },
+  "author": "MarkMatviiev",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MatviievMark/personalTrackingRepo/issues"
+  },
+  "homepage": "https://github.com/MatviievMark/personalTrackingRepo#readme",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "express": "^4.19.2",
+    "nodemon": "^3.1.0"
+  }
+  
+}
+

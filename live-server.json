@@ -1,0 +1,6 @@
+{
+    "port": 8080,
+    "proxy": {
+      "/transactions": "http://localhost:3000/transactions"
+    }
+  }
