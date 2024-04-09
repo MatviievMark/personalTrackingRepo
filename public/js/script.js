@@ -110,10 +110,9 @@ async function handleUpdate(event) {
       fetchAndDisplayTransactions();
       // Reset the form submission behavior
       submitButton.textContent = 'Add Transaction';
-      // form.removeEventListener('submit', handleUpdate);
-      // form.addEventListener('submit', handleSubmit);
       submitButton.removeEventListener('click', handleUpdate);
       submitButton.addEventListener('click', handleSubmit);
+      
       // Remove the transactionId field
       const transactionIdField = document.querySelector('input[name="transactionId"]');
       if (transactionIdField) {
@@ -208,8 +207,6 @@ sortButtons.forEach((button) => {
 })
 
 // Live Reload
-
-
 async function handleSubmit(event) {
   event.preventDefault();
 

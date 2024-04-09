@@ -5,6 +5,11 @@ const path = require('path');
 
 const app = express();
 
+// this is a temporary solution, I know it's not the best way to do it
+// but I'm not sure how to fix it
+// for whatever reason, after the PUT is called the POST will append the data on the same line and this is to prevent that from happening
+let wasEddited = false;
+
 // Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -12,7 +17,7 @@ app.use(express.static('public'));
 
 // Function to append data to the CSV file
 const appendToCSV = (data) => {
-  const csv = `${data.amount},${data.date},${data.category},${data.description}, ${data.type}\n`;
+  const csv = `${data.amount},${data.date},${data.category},${data.description},${data.type}\n`;
   fs.appendFile('transactions.csv', csv, (err) => {
     if (err) {
       console.error(err);
@@ -27,23 +32,46 @@ app.get('/', (req, res) => {
 
 // Route for handling POST requests
 app.post('/transactions', (req, res) => {
+  console.log('POST request received');
   const { amount, date, category, description, type } = req.body;
   const csvPath = path.join(__dirname, 'transactions.csv');
 
+  // Check if the CSV file exists, create it if it doesn't
   if (!fs.existsSync(csvPath)) {
     fs.writeFileSync(csvPath, 'Amount,Date,Category,Description,Type\n');
   }
 
-  const transactionData = {
-    amount: amount,
-    date: date,
-    category: category,
-    description: description,
-    type: type
-  };
+  // Read the existing CSV file
+  fs.readFile(csvPath, 'utf8', (err, data) => {
+    if (err) {
+      console.error('Error reading file:', err);
+      res.status(500).json({ error: 'Error reading file' });
+      return;
+    }
 
-  appendToCSV(transactionData);
-  res.status(201).json({ message: 'Transaction added successfully!' });
+    // Split the CSV data into an array of lines
+    const lines = data.trim().split('\n');
+    if (wasEddited) {
+      // Check if the last line is empty
+      const lastLine = lines[lines.length - 1].trim();
+      if (lastLine !== '') {
+        fs.appendFileSync(csvPath, '\n');
+      }
+    }
+
+    const transactionData = {
+      amount: amount,
+      date: date,
+      category: category,
+      description: description,
+      type: type
+    };
+
+    appendToCSV(transactionData);
+
+    res.status(201).json({ message: 'Transaction added successfully!' });
+    wasEddited = false;
+  });
 });
 
 // Route for handling GET requests
@@ -108,7 +136,8 @@ app.delete('/transactions/:id', (req, res) => {
 
 // Route for handling edit requests
 app.put('/transactions/:id', (req, res) => {
-  console.log('PUT request received')
+  wasEddited = true;
+  console.log('PUT request received');
   const transactionId = req.params.id;
   const { amount, date, category, description, type } = req.body;
   const csvFilePath = path.join(__dirname, 'transactions.csv');
@@ -123,7 +152,7 @@ app.put('/transactions/:id', (req, res) => {
     const lines = data.trim().split('\n');
     const updatedLines = lines.map((line, index) => {
       if (index === parseInt(transactionId)) {
-        return `${amount},${date},${category},${description}, ${type}`;
+        return `${amount},${date},${category},${description},${type}`;
       }
       return line;
     });
