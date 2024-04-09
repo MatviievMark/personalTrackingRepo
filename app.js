@@ -17,7 +17,9 @@ app.use(express.static('public'));
 
 // Function to append data to the CSV file
 const appendToCSV = (data) => {
-  const csv = `${data.amount},${data.date},${data.category},${data.description},${data.type}\n`;
+  // Another problem here that I need a space in order to properly pass it to the generate pie chart function
+  // will be fixed later
+  const csv = `${data.amount},${data.date},${data.category},${data.description}, ${data.type}\n`;
   fs.appendFile('transactions.csv', csv, (err) => {
     if (err) {
       console.error(err);
