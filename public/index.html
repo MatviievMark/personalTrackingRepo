@@ -1,49 +1,14 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Personal Finance Tracker</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 20px;
-      }
 
-      h1 {
-        margin-bottom: 20px;
-      }
-
-      form {
-        margin-bottom: 20px;
-      }
-
-      label {
-        display: block;
-        margin-bottom: 5px;
-      }
-
-      input[type="number"],
-      input[type="date"],
-      input[type="text"] {
-        width: 200px;
-        padding: 5px;
-        margin-bottom: 10px;
-      }
-
-      button {
-        padding: 10px 20px;
-        background-color: #4CAF50;
-        color: white;
-        border: none;
-        cursor: pointer;
-      }
-
-      #message {
-        margin-top: 20px;
-        font-weight: bold;
-      }
-    </style>
   </head>
   <body>
     <h1>Personal Finance Tracker</h1>
@@ -61,87 +26,44 @@
       <label for="description">Description:</label>
       <input type="text" id="description" name="description" required>
 
+      <label for="type">Type:</label>
+      <select id="type" name="type">
+        <option value="income">Income</option>
+        <option value="expense">Expense</option>
+      </select>
+
       <button type="submit">Add Transaction</button>
     </form>
 
     <div id="message"></div>
 
-    <div id="transactions">
-      <h2>Transactions</h2> 
-      <table>
-        <thead>
-          <tr>
-            <th>Amount</th>
-            <th>Date</th>
-            <th>Category</th>
-            <th>Description</th>
-          </tr>
-        </thead>
-        <tbody id="transactionsTable">
-          <!-- Transactions will be added here -->
-        </tbody>
-      </table>
+    <table id="transactionsTable">
+      <thead>
+        <tr>
+          <th>Amount <button class="sortButton" data-sort="amount">Sort</button></th>
+          <th>Date <button class="sortButton" data-sort="date">Sort</button></th>
+          <th>Category <button class="sortButton" data-sort="category">Sort</button></th>
+          <th>Description</th>
+          <th>Type</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Transactions will be added here -->
+      </tbody>
+    </table>
+
+    <button id="generateChartButton">Generate Pie Chart</button>
+    <div class="chart-container">
+      <div class="chart-wrapper">
+        <canvas id="incomeChart"></canvas>
+      </div>
+      <div class="chart-wrapper">
+        <canvas id="expenseChart"></canvas>
+      </div>
+      <div class="stat-wrapper">
+        <div id= "summary"></div>
+      </div>
     </div>
-
-    <script>
-      const form = document.getElementById('transactionForm');
-      const messageDiv = document.getElementById('message');
-      // const transactionsTable = document.getElementById('transactionsTable');
-
-      form.addEventListener('submit', async (event) => {
-        event.preventDefault();
-
-        const amount = document.getElementById('amount').value;
-        const date = document.getElementById('date').value;
-        const category = document.getElementById('category').value;
-        const description = document.getElementById('description').value;
-
-        try {
-          const response = await fetch('/transactions', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ amount, date, category, description })
-          });
-
-          if (response.ok) {
-            messageDiv.textContent = 'Transaction added successfully!';
-            form.reset();
-          } else {
-            messageDiv.textContent = 'Failed to add transaction.';
-          }
-        } catch (error) {
-          console.error('Error:', error);
-          messageDiv.textContent = 'An error occurred.';
-        }
-      });
-      
-      // // Fetch transactions when the page loads
-      async function fetchAndDisplayTransactions() {
-      try {
-        const response = await fetch('/transactions');
-        const transactions = await response.json();
-
-          transactionsTable.innerHTML = '';
-          transactions.forEach((transaction) => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-              <td>${transaction.amount}</td>
-              <td>${transaction.date}</td>
-              <td>${transaction.category}</td>
-              <td>${transaction.description}</td>
-            `;
-            transactionsTable.appendChild(row);
-          });
-        } catch (error) {
-          console.error('Error fetching transactions:', error);
-          messageDiv.textContent = 'An error occurred while fetching transactions.';
-        }
-      }
-
-      // Call the fetchAndDisplayTransactions function when the page loads
-      window.addEventListener('load', fetchAndDisplayTransactions);
-    </script>
   </body>
 </html>
